@@ -43,7 +43,85 @@
   const bodyParser = require('body-parser');
   
   const app = express();
-  
+  const data=[]
   app.use(bodyParser.json());
   
+app.get('/todos', (req,res)=>{
+   res.status(200).json(data)
+})
+
+app.get('/todos/:id', (req,res)=>{
+  let id= req.params.id;
+  let flag=false;
+  let index=0;
+  for(let i=0;i<data.length;i++){
+    if(data[i].id===parseInt(id)){
+      flag=true;
+      index=i;
+      break;
+    }
+  }
+  if(flag){
+    res.status(200).json(data[index])
+  }else{
+    res.status(404).send();
+  }
+
+
+})
+
+app.post('/todos', (req,res)=>{
+  var todo= {
+    id: Math.floor(Math.random() * 1000000), // unique random id
+    title: req.body.title,
+    description: req.body.description
+  }
+  data.push(todo);
+  res.status(201).json(todo)
+})
+
+app.put('/todos/:id', (req,res)=>{
+  let id= req.params.id;
+  let flag=false;
+  let index=0;
+  for(let i=0;i<data.length;i++){
+    if(data[i].id===parseInt(id)){
+      flag=true;
+      index=i;
+      break;
+    }
+  }
+  if(flag){
+    data[index].description=req.body.description;
+    data[index].title=req.body.title;
+    res.status(200).json(data[index])
+  }else{
+    res.status(404).send();
+  }
+})
+
+app.delete('/todos/:id',(req,res)=>{
+  let id= req.params.id;
+  let flag=false;
+  let index=0;
+  for(let i=0;i<data.length;i++){
+    if(data[i].id===parseInt(id)){
+      flag=true;
+      index=i;
+      break;
+    }
+  }
+  if(flag){
+    data.splice(index, 1);
+    res.status(200).send()
+  }else{
+    res.status(404).send();
+  }
+})
+
+app.use((req,res,next)=>{
+  res.status(404).send()
+})
+
+  app.listen(4000);
   module.exports = app;
